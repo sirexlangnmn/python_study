@@ -1,0 +1,51 @@
+{% extends 'base.html' %}{% load widget_tweaks %}
+{% block title %}Sign Up{% endblock %}
+{% block content %}<div class="hero min-h-screen bg-base-200">
+    <div class="hero-content flex-col lg:flex-row-reverse">
+        <div class="text-center lg:text-left">
+            <h1 class="text-5xl font-bold">Join us today!</h1>
+            <p class="py-6">
+                Create your account and start building amazing things with our modern Django stack.
+            </p>
+        </div>
+        <div class="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
+            <form class="card-body" method="post">
+{% csrf_token %}                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">Email</span>
+                    </label>
+{{ form.email|add_class:"input input-bordered" }}{% if form.email.errors %}                        <label class="label">
+                            <span class="label-text-alt text-error">{{ form.email.errors.0 }}</span>
+                        </label>
+{% endif %}                </div>
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">Password</span>
+                    </label>
+{{ form.password1|add_class:"input input-bordered" }}{% if form.password1.errors %}                        <label class="label">
+                            <span class="label-text-alt text-error">{{ form.password1.errors.0 }}</span>
+                        </label>
+{% endif %}                </div>
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">Confirm Password</span>
+                    </label>
+{{ form.password2|add_class:"input input-bordered" }}{% if form.password2.errors %}                        <label class="label">
+                            <span class="label-text-alt text-error">{{ form.password2.errors.0 }}</span>
+                        </label>
+{% endif %}                </div>
+                <div class="form-control mt-6">
+                    <button class="btn btn-primary">Sign Up</button>
+                </div>
+                <div class="divider">OR</div>
+                <div class="text-center">
+                    <p class="text-sm">
+                        Already have an account? 
+                        <a href="{% url 'account_login' %}" class="link link-primary">Login</a>
+                    </p>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

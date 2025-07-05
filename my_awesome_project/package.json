@@ -1,0 +1,29 @@
+{
+  "name": "my_awesome_project",
+  "version": "1.0.0",
+  "description": "Frontend build pipeline for my_awesome_project",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "htmx.org": "^1.9.8",
+    "alpinejs": "^3.13.3",
+    "hyperscript.org": "^0.9.12"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0",
+    "@vitejs/plugin-legacy": "^5.0.0",
+    "terser": "^5.24.0"
+  },
+  "keywords": [
+    "django",
+    "htmx",
+    "alpinejs",
+    "tailwindcss"
+  ],
+  "author": "",
+  "license": "MIT"
+}

@@ -1,0 +1,51 @@
+{% extends 'base.html' %}{% load widget_tweaks %}
+{% block title %}Login{% endblock %}
+{% block content %}<div class="hero min-h-screen bg-base-200">
+    <div class="hero-content flex-col lg:flex-row-reverse">
+        <div class="text-center lg:text-left">
+            <h1 class="text-5xl font-bold">Login now!</h1>
+            <p class="py-6">
+                Sign in to your account to access all features and personalized content.
+            </p>
+        </div>
+        <div class="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
+            <form class="card-body" method="post">
+{% csrf_token %}                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">Email</span>
+                    </label>
+{{ form.login|add_class:"input input-bordered" }}{% if form.login.errors %}                        <label class="label">
+                            <span class="label-text-alt text-error">{{ form.login.errors.0 }}</span>
+                        </label>
+{% endif %}                </div>
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">Password</span>
+                    </label>
+{{ form.password|add_class:"input input-bordered" }}{% if form.password.errors %}                        <label class="label">
+                            <span class="label-text-alt text-error">{{ form.password.errors.0 }}</span>
+                        </label>
+{% endif %}                    <label class="label">
+                        <a href="{% url 'account_reset_password' %}" class="label-text-alt link link-hover">Forgot password?</a>
+                    </label>
+                </div>
+                <div class="form-control">
+                    <label class="label cursor-pointer">
+{{ form.remember|add_class:"checkbox" }}                        <span class="label-text">Remember me</span>
+                    </label>
+                </div>
+                <div class="form-control mt-6">
+                    <button class="btn btn-primary">Login</button>
+                </div>
+                <div class="divider">OR</div>
+                <div class="text-center">
+                    <p class="text-sm">
+                        Don't have an account? 
+                        <a href="{% url 'account_signup' %}" class="link link-primary">Sign up</a>
+                    </p>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

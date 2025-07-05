@@ -1,0 +1,11 @@
+# Production requirements
+-r base.txt
+
+# Production server
+gunicorn==23.0.0
+
+# Production utilities
+whitenoise==6.8.2
+
+
+
