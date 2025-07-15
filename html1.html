@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Linked Dropdowns</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #121212;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 50px;
+    }
+
+    .dropdown-container {
+      display: flex;
+      gap: 20px;
+    }
+
+    select {
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: none;
+      background-color: #333;
+      color: #fff;
+    }
+
+    select:focus {
+      outline: none;
+      box-shadow: 0 0 5px #00bcd4;
+    }
+
+    option:disabled {
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Choose your options</h2>
+  <div class="dropdown-container">
+    <select id="dropdown1">
+      <option value="">-- Select Option 1 --</option>
+      <option value="Option 1A">Option 1A</option>
+      <option value="Option 1B">Option 1B</option>
+      <option value="Option 1C">Option 1C</option>
+      <option value="Option 1D">Option 1D</option>
+      <option value="Option 1E">Option 1E</option>
+    </select>
+
+    <select id="dropdown2">
+      <option value="">-- Select Option 2 --</option>
+      <option value="Option 2A">Option 2A</option>
+      <option value="Option 2B">Option 2B</option>
+      <option value="Option 2C">Option 2C</option>
+      <option value="Option 2D">Option 2D</option>
+      <option value="Option 2E" id="opt2e">Option 2E</option>
+    </select>
+  </div>
+
+  <script>
+    const dropdown1 = document.getElementById('dropdown1');
+    const dropdown2 = document.getElementById('dropdown2');
+    const option2E = document.getElementById('opt2e');
+
+    dropdown1.addEventListener('change', function () {
+      if (this.value === 'Option 1E') {
+        dropdown2.value = 'Option 2E';
+        // Lock Option 2E
+        for (let option of dropdown2.options) {
+          if (option.value !== 'Option 2E') {
+            option.disabled = true;
+          } else {
+            option.disabled = false;
+          }
+        }
+      } else {
+        // Unlock all options in dropdown2
+        for (let option of dropdown2.options) {
+          option.disabled = false;
+        }
+      }
+    });
+  </script>
+
+</body>
+</html>
