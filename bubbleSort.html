@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bubble Sort Visualizer</title>
+  <style>
+    body {
+      background-color: #111;
+      color: white;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .layout {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .visualization {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 20px;
+      position: relative;
+    }
+
+    .circle {
+      width: 50px;
+      height: 50px;
+      background-color: skyblue;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 18px;
+      transition: transform 0.5s ease, background 0.3s ease;
+      position: relative;
+    }
+
+    .highlight {
+      background-color: orange;
+      border: 2px solid yellow;
+      z-index: 2;
+    }
+
+    .done {
+      background-color: limegreen;
+    }
+
+    .connector {
+      position: absolute;
+      height: 4px;
+      background: yellow;
+      bottom: -12px;
+      border-radius: 2px;
+      z-index: 1;
+    }
+
+    #status {
+      margin-top: 20px;
+      font-size: 16px;
+      min-height: 24px;
+    }
+
+    pre.code-block {
+      background-color: #222;
+      color: #eee;
+      padding: 20px;
+      margin-top: 30px;
+      border-radius: 8px;
+      overflow-x: auto;
+      max-width: 700px;
+      width: 100%;
+      font-family: monospace;
+      font-size: 15px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      position: relative;
+    }
+
+    .highlight-line {
+      background-color: rgba(255, 255, 0, 0.2);
+      border-left: 4px solid yellow;
+      padding-left: 6px;
+    }
+
+    .buttons {
+      margin-top: 20px;
+    }
+
+    button {
+      background: #444;
+      color: white;
+      padding: 10px 16px;
+      margin: 0 10px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    button:hover {
+      background: #666;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .status-icon {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1em;
+    }
+
+    .status-icon img {
+      width: 20px;
+      height: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Bubble Sort Visualizer</h1>
+
+  <div class="layout">
+    <div class="buttons">
+      <button id="autoBtn">Run Automatically</button>
+      <button id="stepBtn">Step-by-Step</button>
+    </div>
+
+    <div class="visualization">
+      <div class="container" id="arrayContainer"></div>
+      <div id="status"></div>
+    </div>
+
+    <div>
+      <h3 style="margin-top: 30px;">Python Code</h3>
+      <pre class="code-block" id="pythonCode">
+<span id="line1">def bubble_sort(arr):</span>
+<span id="line2">    n = len(arr)</span>
+<span id="line3">    for i in range(n):</span>
+<span id="line4">        swapped = False</span>
+<span id="line5">        for j in range(0, n - i - 1):</span>
+<span id="line6">            if arr[j] > arr[j + 1]:</span>
+<span id="line7">                arr[j], arr[j + 1] = arr[j + 1], arr[j]</span>
+<span id="line8">                swapped = True</span>
+<span id="line9">        if not swapped:</span>
+<span id="line10">            break</span>
+<span id="line11">    return arr</span>
+<span id="line12"></span>
+<span id="line13">scores = [5, 1, 4, 2, 8, 3, 7, 6, 10, 9]</span>
+<span id="line14">sorted_scores = bubble_sort(scores)</span>
+<span id="line15">print("Sorted scores:", sorted_scores)</span>
+      </pre>
+    </div>
+  </div>
+
+  <script>
+    let array = [5, 1, 4, 2, 8, 3, 7, 6, 10, 9];
+    const container = document.getElementById("arrayContainer");
+    const statusText = document.getElementById("status");
+    const autoBtn = document.getElementById("autoBtn");
+    const stepBtn = document.getElementById("stepBtn");
+
+    function highlightCodeLine(lineNum) {
+      for (let i = 1; i <= 15; i++) {
+        document.getElementById("line" + i)?.classList.remove("highlight-line");
+      }
+      if (lineNum) {
+        document.getElementById("line" + lineNum)?.classList.add("highlight-line");
+      }
+    }
+
+    function renderArray(arr, highlight = []) {
+      container.innerHTML = "";
+
+      arr.forEach((num, index) => {
+        const div = document.createElement("div");
+        div.className = "circle";
+        div.textContent = num;
+        if (highlight.includes(index)) {
+          div.classList.add("highlight");
+        }
+        container.appendChild(div);
+      });
+
+      if (highlight.length === 2) {
+        const el1 = container.children[highlight[0]];
+        const el2 = container.children[highlight[1]];
+        const left1 = el1.offsetLeft;
+        const left2 = el2.offsetLeft;
+
+        const connector = document.createElement("div");
+        connector.className = "connector";
+        connector.style.width = `${Math.abs(left2 - left1) + 50}px`;
+        connector.style.left = `${Math.min(left1, left2)}px`;
+        container.appendChild(connector);
+      }
+    }
+
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    async function animateSwap(index1, index2) {
+      const elements = container.children;
+      const el1 = elements[index1];
+      const el2 = elements[index2];
+      const dist = el2.offsetLeft - el1.offsetLeft;
+
+      el1.style.transform = `translateX(${dist}px)`;
+      el2.style.transform = `translateX(${-dist}px)`;
+
+      await sleep(500);
+
+      el1.style.transform = "";
+      el2.style.transform = "";
+    }
+
+    async function bubbleSortVisual(arr) {
+      autoBtn.disabled = true;
+      stepBtn.disabled = true;
+      const n = arr.length;
+
+      for (let i = 0; i < n; i++) {
+        let swapped = false;
+        for (let j = 0; j < n - i - 1; j++) {
+          highlightCodeLine(5);
+          renderArray(arr, [j, j + 1]);
+          statusText.innerHTML = `<span class="status-icon"><img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/2194.png"> Comparing ${arr[j]} and ${arr[j + 1]}</span>`;
+          await sleep(800);
+
+          highlightCodeLine(6);
+          if (arr[j] > arr[j + 1]) {
+            highlightCodeLine(7);
+            await animateSwap(j, j + 1);
+            [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
+            swapped = true;
+            renderArray(arr, [j, j + 1]);
+            statusText.innerHTML = `<span class="status-icon"><img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f501.png"> Swapped ${arr[j]} and ${arr[j + 1]}</span>`;
+            await sleep(800);
+          }
+        }
+        if (!swapped) break;
+      }
+
+      highlightCodeLine(11);
+      renderArray(arr);
+      statusText.innerHTML = `<span class="status-icon"><img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/2705.png"> Sorting Done!</span>`;
+      Array.from(container.children).forEach(el => el.classList.add("done"));
+      autoBtn.disabled = false;
+      stepBtn.disabled = false;
+    }
+
+    // Step-by-step state
+    let stepArray = [...array];
+    let stepI = 0;
+    let stepJ = 0;
+    let stepSwapped = false;
+    let stepModeActive = false;
+
+    stepBtn.onclick = async () => {
+      if (!stepModeActive) {
+        stepArray = [...array];
+        stepI = 0;
+        stepJ = 0;
+        stepSwapped = false;
+        stepModeActive = true;
+        autoBtn.disabled = true;
+        stepBtn.textContent = "Next Step";
+        renderArray(stepArray);
+        return;
+      }
+
+      const n = stepArray.length;
+
+      if (stepI >= n) {
+        highlightCodeLine(11);
+        renderArray(stepArray);
+        statusText.innerHTML = `<span class="status-icon"><img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/2705.png"> Sorting Done!</span>`;
+        Array.from(container.children).forEach(el => el.classList.add("done"));
+        stepModeActive = false;
+        stepBtn.textContent = "Step-by-Step";
+        autoBtn.disabled = false;
+        return;
+      }
+
+      if (stepJ < n - stepI - 1) {
+        highlightCodeLine(5);
+        renderArray(stepArray, [stepJ, stepJ + 1]);
+        statusText.innerHTML = `<span class="status-icon"><img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/2194.png"> Comparing ${stepArray[stepJ]} and ${stepArray[stepJ + 1]}</span>`;
+        highlightCodeLine(6);
+
+        if (stepArray[stepJ] > stepArray[stepJ + 1]) {
+          highlightCodeLine(7);
+          await animateSwap(stepJ, stepJ + 1);
+          [stepArray[stepJ], stepArray[stepJ + 1]] = [stepArray[stepJ + 1], stepArray[stepJ]];
+          renderArray(stepArray, [stepJ, stepJ + 1]);
+          statusText.innerHTML = `<span class="status-icon"><img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f501.png"> Swapped ${stepArray[stepJ]} and ${stepArray[stepJ + 1]}</span>`;
+          stepSwapped = true;
+        }
+        stepJ++;
+      } else {
+        if (!stepSwapped) {
+          stepI = n; // done early
+        } else {
+          stepI++;
+          stepJ = 0;
+          stepSwapped = false;
+        }
+      }
+    };
+
+    autoBtn.onclick = () => {
+      renderArray([...array]);
+      bubbleSortVisual([...array]);
+    };
+
+    renderArray(array);
+  </script>
+</body>
+</html>
