@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Comparison Sorting Algorithms</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #ffffff;
+    }
+
+    header {
+      background-color: #006400;
+      color: orange;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .buttons {
+      margin-top: 10px;
+    }
+
+    button {
+      margin: 5px;
+      padding: 10px 15px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    #bar-container {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      height: 400px;
+      margin: 20px auto;
+      width: 90%;
+      border-top: 1px solid #ccc;
+    }
+
+    .bar {
+      width: 10px;
+      margin: 0 2px;
+      background-color: lightblue;
+      text-align: center;
+      font-size: 10px;
+      color: black;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Comparison Sorting Algorithms</h1>
+    <div class="buttons">
+      <button onclick="randomizeArray()">Randomize Array</button>
+      <button onclick="bubbleSort()">Bubble Sort</button>
+    </div>
+  </header>
+  <main>
+    <div id="bar-container"></div>
+  </main>
+
+  <script>
+    const barContainer = document.getElementById('bar-container');
+    let array = [];
+
+    function randomizeArray(size = 50) {
+      array = Array.from({ length: size }, () => Math.floor(Math.random() * 100));
+      renderBars();
+    }
+
+    function renderBars(highlightedIndices = []) {
+      barContainer.innerHTML = '';
+      array.forEach((value, idx) => {
+        const bar = document.createElement('div');
+        bar.classList.add('bar');
+        bar.style.height = `${value * 3}px`;
+        if (highlightedIndices.includes(idx)) {
+          bar.style.backgroundColor = 'red';
+        }
+        bar.innerText = value;
+        barContainer.appendChild(bar);
+      });
+    }
+
+    async function bubbleSort() {
+      let len = array.length;
+      for (let i = 0; i < len - 1; i++) {
+        for (let j = 0; j < len - i - 1; j++) {
+          renderBars([j, j + 1]);
+          await sleep(50);
+          if (array[j] > array[j + 1]) {
+            [array[j], array[j + 1]] = [array[j + 1], array[j]];
+          }
+        }
+      }
+      renderBars();
+    }
+
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    // Initialize on page load
+    randomizeArray();
+  </script>
+</body>
+</html>

@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Insertion Sort Visualizer</title>
+  <style>
+    body {
+      background-color: #111;
+      color: white;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 { text-align: center; }
+    .layout { display: flex; flex-direction: column; align-items: center; }
+    .visualization { display: flex; flex-direction: column; align-items: center; }
+    .container {
+      display: flex; justify-content: center; gap: 16px;
+      margin-top: 20px; position: relative;
+    }
+    .circle {
+      width: 50px; height: 50px; background-color: skyblue;
+      border-radius: 50%; display: flex; justify-content: center; align-items: center;
+      font-size: 18px; transition: transform 0.5s ease, background 0.3s ease;
+      position: relative; z-index: 1;
+    }
+    .highlight { background-color: orange; border: 2px solid yellow; }
+    .done { background-color: limegreen; }
+    #status { margin-top: 20px; font-size: 16px; min-height: 24px; }
+    pre.code-block {
+      background-color: #222; color: #eee; padding: 20px; margin-top: 30px;
+      border-radius: 8px; overflow-x: auto; max-width: 700px; width: 100%;
+      font-family: monospace; font-size: 15px; line-height: 1.6; white-space: pre-wrap;
+    }
+    .highlight-line {
+      background-color: rgba(255, 255, 0, 0.2);
+      border-left: 4px solid yellow;
+      padding-left: 6px;
+    }
+    .buttons { margin-top: 20px; }
+    button {
+      background: #444; color: white; padding: 10px 16px; margin: 0 10px;
+      border: none; border-radius: 6px; cursor: pointer; font-size: 14px;
+    }
+    button:hover { background: #666; }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+  </style>
+</head>
+<body>
+
+  <h1>Insertion Sort Visualizer</h1>
+
+  <div class="layout">
+    <div class="buttons">
+      <button id="autoBtn">Run Automatically</button>
+      <button id="stepBtn">Step-by-Step</button>
+    </div>
+
+    <div class="visualization">
+      <div class="container" id="arrayContainer"></div>
+      <div id="status"></div>
+    </div>
+
+    <div>
+      <h3 style="margin-top: 30px;">Python Code</h3>
+      <pre class="code-block" id="pythonCode">
+<span id="line1">def insertion_sort(arr):</span>
+<span id="line2">    for i in range(1, len(arr)):</span>
+<span id="line3">        key = arr[i]</span>
+<span id="line4">        j = i - 1</span>
+<span id="line5">        while j >= 0 and arr[j] > key:</span>
+<span id="line6">            arr[j + 1] = arr[j]</span>
+<span id="line7">            j -= 1</span>
+<span id="line8">        arr[j + 1] = key</span>
+<span id="line9">    return arr</span>
+      </pre>
+    </div>
+  </div>
+
+  <script>
+    let array = [5, 1, 4, 2, 8, 3, 7, 6, 10, 9];
+    const container = document.getElementById("arrayContainer");
+    const statusText = document.getElementById("status");
+    const autoBtn = document.getElementById("autoBtn");
+    const stepBtn = document.getElementById("stepBtn");
+
+    function highlightCodeLine(lineNum) {
+      for (let i = 1; i <= 9; i++) {
+        document.getElementById("line" + i)?.classList.remove("highlight-line");
+      }
+      if (lineNum) {
+        document.getElementById("line" + lineNum)?.classList.add("highlight-line");
+      }
+    }
+
+    function renderArray(arr) {
+      container.innerHTML = "";
+      arr.forEach(num => {
+        const div = document.createElement("div");
+        div.className = "circle";
+        div.textContent = num;
+        container.appendChild(div);
+      });
+    }
+
+    function sleep(ms) { return new Promise(res => setTimeout(res, ms)); }
+
+    // ===== AUTO MODE (unchanged visual style) =====
+    async function animateInsertionSort(arr) {
+      autoBtn.disabled = true;
+      stepBtn.disabled = true;
+      renderArray(arr);
+
+      for (let i = 1; i < arr.length; i++) {
+        highlightCodeLine(3);
+        let key = arr[i];
+        let j = i - 1;
+        statusText.textContent = `Picking ${key}`;
+        const elements = container.children;
+
+        // Pick up key (move up)
+        elements[i].classList.add("highlight");
+        elements[i].style.transform = "translateY(-60px)";
+        await sleep(500);
+
+        // Shift elements to the right while finding position
+        while (j >= 0 && arr[j] > key) {
+          highlightCodeLine(5);
+          statusText.textContent = `Comparing ${arr[j]} > ${key} → shift right`;
+          elements[j].style.transform = "translateX(66px)";
+          arr[j + 1] = arr[j];
+          j--;
+          await sleep(500);
+        }
+
+        // Move key horizontally to its correct position
+        const targetX = (j + 1 - i) * 66;
+        elements[i].style.transform = `translate(${targetX}px, -60px)`;
+        await sleep(500);
+
+        // Drop key into place
+        highlightCodeLine(8);
+        elements[i].style.transform = `translate(${targetX}px, 0px)`;
+        await sleep(500);
+
+        // Re-render array with updated order
+        arr[j + 1] = key;
+        renderArray(arr);
+        await sleep(300);
+      }
+
+      highlightCodeLine(9);
+      Array.from(container.children).forEach(el => el.classList.add("done"));
+      statusText.textContent = "✅ Sorting Done!";
+      autoBtn.disabled = false;
+      stepBtn.disabled = false;
+    }
+
+    autoBtn.onclick = () => {
+      animateInsertionSort([...array]);
+    };
+
+    // ===== STEP-BY-STEP MODE =====
+    let stepArr = [...array];
+    let sI = 1;              // for i in range(1, n)
+    let sJ = 0;              // j pointer
+    let sKey = null;         // key value
+    let sPhase = "idle";     // "idle" -> "init" -> "compare" -> "shift" -> "place" -> "drop" -> repeat
+    let stepModeActive = false;
+    let stepBusy = false;
+
+    function setStatus(msg) { statusText.textContent = msg; }
+
+    function startStepMode() {
+      stepArr = [...array];
+      sI = 1;
+      sJ = sI - 1;
+      sKey = null;
+      sPhase = "init";
+      stepModeActive = true;
+      autoBtn.disabled = true;
+      stepBtn.textContent = "Next Step";
+      highlightCodeLine(null);
+      renderArray(stepArr);
+      setStatus("");
+    }
+
+    async function doStep() {
+      if (stepBusy) return;
+      stepBusy = true;
+
+      // Done?
+      if (sI >= stepArr.length) {
+        highlightCodeLine(9);
+        renderArray(stepArr);
+        Array.from(container.children).forEach(el => el.classList.add("done"));
+        setStatus("✅ Sorting Done!");
+        stepModeActive = false;
+        stepBtn.textContent = "Step-by-Step";
+        autoBtn.disabled = false;
+        stepBusy = false;
+        return;
+      }
+
+      const elements = container.children;
+
+      switch (sPhase) {
+        case "init": {
+          highlightCodeLine(2);
+          // Pick key at i
+          sKey = stepArr[sI];
+          sJ = sI - 1;
+          highlightCodeLine(3);
+          elements[sI].classList.add("highlight");
+          elements[sI].style.transform = "translateY(-60px)";
+          setStatus(`Picking ${sKey} (index ${sI})`);
+          sPhase = "compare";
+          break;
+        }
+
+        case "compare": {
+          highlightCodeLine(4);
+          if (sJ >= 0 && stepArr[sJ] > sKey) {
+            highlightCodeLine(5);
+            setStatus(`Comparing ${stepArr[sJ]} > ${sKey} → shift right`);
+            sPhase = "shift";
+          } else {
+            sPhase = "place";
+          }
+          break;
+        }
+
+        case "shift": {
+          highlightCodeLine(6);
+          // Visual shift of the element at j
+          elements[sJ].style.transform = "translateX(66px)";
+          // Logical shift in array
+          stepArr[sJ + 1] = stepArr[sJ];
+          sJ--;
+          highlightCodeLine(7);
+          sPhase = "compare";
+          break;
+        }
+
+        case "place": {
+          highlightCodeLine(8);
+          // Move key horizontally to final slot (j+1)
+          const targetX = (sJ + 1 - sI) * 66;
+          elements[sI].style.transform = `translate(${targetX}px, -60px)`;
+          setStatus(`Move key to index ${sJ + 1}`);
+          sPhase = "drop";
+          break;
+        }
+
+        case "drop": {
+          // Drop key into place, update array, and re-render
+          const targetX = (sJ + 1 - sI) * 66;
+          elements[sI].style.transform = `translate(${targetX}px, 0px)`;
+          await sleep(300);
+
+          stepArr[sJ + 1] = sKey;
+          renderArray(stepArr);
+          setStatus(`Inserted ${sKey} at index ${sJ + 1}`);
+
+          // Advance outer loop
+          sI++;
+          sJ = sI - 1;
+          sKey = null;
+
+          // Continue or finish
+          sPhase = (sI < stepArr.length) ? "init" : "done";
+          break;
+        }
+
+        case "done": {
+          highlightCodeLine(9);
+          renderArray(stepArr);
+          Array.from(container.children).forEach(el => el.classList.add("done"));
+          setStatus("✅ Sorting Done!");
+          stepModeActive = false;
+          stepBtn.textContent = "Step-by-Step";
+          autoBtn.disabled = false;
+          break;
+        }
+
+        default:
+          sPhase = "init";
+      }
+
+      stepBusy = false;
+    }
+
+    stepBtn.onclick = async () => {
+      if (!stepModeActive) {
+        startStepMode();
+        return;
+      }
+      await doStep();
+    };
+
+    renderArray(array);
+  </script>
+</body>
+</html>
